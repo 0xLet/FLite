@@ -7,6 +7,8 @@ final class FLiteTests: XCTestCase {
         let semaphore = DispatchSemaphore(value: 0)
         var values = [Todo]()
         
+        FLite.storage = .memory
+        
         FLite.prepare(model: Todo.self)
         
         FLite.create(model: Todo(title: "Hello World"))
