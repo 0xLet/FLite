@@ -1,7 +1,12 @@
 import FluentSQLite
 
 public struct FLite {
-    public static var manager = SQLiteDatabaseManager()
+    public static var storage: SQLiteStorage = .memory {
+        didSet {
+            FLite.manager = SQLiteDatabaseManager(storage: FLite.storage)
+        }
+    }
+    public static var manager = SQLiteDatabaseManager(storage: FLite.storage)
 }
 
 public extension FLite {
