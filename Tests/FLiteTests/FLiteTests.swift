@@ -11,11 +11,12 @@ final class FLiteTests: XCTestCase {
         
         FLite.prepare(model: Todo.self)
         
-        FLite.create(model: Todo(title: "Hello World"))
+        FLite.create(model: Todo(title: "Hello World", strings: ["hello", "world"]))
         
         FLite.fetch(model: Todo.self) {
             values = $0
             semaphore.signal()
+
         }
         
         semaphore.wait()
@@ -36,11 +37,14 @@ final class Todo: SQLiteModel {
 
     /// A title describing what this `Todo` entails.
     var title: String
+    
+    var someList: [String]
 
     /// Creates a new `Todo`.
-    init(id: Int? = nil, title: String) {
+    init(id: Int? = nil, title: String, strings: [String]) {
         self.id = id
         self.title = title
+        self.someList = strings
     }
 }
 
