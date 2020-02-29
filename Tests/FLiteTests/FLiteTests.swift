@@ -9,15 +9,24 @@ final class FLiteTests: XCTestCase {
         
         FLite.storage = .memory
         
-        FLite.prepare(model: Todo.self)
-        
-        FLite.create(model: Todo(title: "Hello World", strings: ["hello", "world"]))
-        
-        FLite.fetch(model: Todo.self) {
-            values = $0
-            semaphore.signal()
-
+        FLite.prepare(model: Todo.self) {
+            print("Prepared")
         }
+        
+        FLite.create(model: Todo(title: "Hello World", strings: ["hello", "world"])) {
+            print("Created: \($0)")
+        }
+        
+        FLite.fetch(model: Todo.self)
+            .whenSuccess { qb in
+            qb.all()
+                .whenSuccess {
+                print($0)
+                values = $0
+                semaphore.signal()
+            }
+        }
+        
         
         semaphore.wait()
         XCTAssert(values.count > 0)
