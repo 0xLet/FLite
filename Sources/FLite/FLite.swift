@@ -11,7 +11,7 @@ public struct FLite {
 
 public extension FLite {
     static var connection: EventLoopFuture<SQLiteConnection> {
-        return FLite.manager.pool.requestConnection()
+        return FLite.manager.connection
     }
     
     static func prepare<T: Migration>(model: T.Type,
