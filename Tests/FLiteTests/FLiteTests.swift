@@ -21,24 +21,24 @@ final class FLiteTests: XCTestCase {
         FLite.fetch(model: Todo.self) { qb in
             qb.all()
                 .whenSuccess {
-                "Values: \($0)".log()
-                values = $0
-                semaphore.signal()
+                    "Values: \($0)".log()
+                    values = $0
+                    semaphore.signal()
             }
         }
         
         semaphore.wait()
         XCTAssert(values.count > 0)
     }
-
+    
     func testTodoArray() {
         let semaphore = DispatchSemaphore(value: 0)
-        var values = (0 ..< 100).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 10000))", strings: []) }
+        var values = (0 ..< 500).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 10000))", strings: []) }
         
         FLite.storage = .memory
-
-        FLite.manager.set(maxConnections: 15)
-
+        
+        FLite.manager.set(maxConnections: 100)
+        
         FLite.manager.set(id: "Something Else")
         
         FLite.prepare(model: Todo.self) {
@@ -50,20 +50,62 @@ final class FLiteTests: XCTestCase {
                 "Created: \($0)".log()
             }
         }
-
+        
         FLite.fetch(model: Todo.self) { qb in
             qb.all()
                 .whenSuccess {
-                "Value: \($0)".log()
-                values = $0
-                semaphore.signal()
+                    "Value: \($0)".log()
+                    values = $0
+                    semaphore.signal()
             }
         }
         
         semaphore.wait()
         XCTAssert(values.count > 0)
     }
-
+    
+    func testTodoList_big() {
+        let semaphore = DispatchSemaphore(value: 0)
+        var bigList: TodoList?
+        
+        FLite.storage = .memory
+        
+        FLite.manager.set(maxConnections: 10)
+        
+        FLite.manager.set(id: "Something Else")
+        
+        FLite.prepare(model: Todo.self) {
+            "Prepared".log()
+        }
+        
+        FLite.prepare(model: TodoList.self) {
+            "TodoList Ready".log()
+        }
+        
+        let list = TodoList(title: "First", items: (0 ..< 100_000).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 100_000))", strings: ["1", "two", "111"]) })
+        
+        FLite.create(model: list) { (value) in
+            "Created: \(value)".log()
+        }
+        
+        FLite.create(model: TodoList(title: "BIG", items: (0 ..< 1_000_000).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 1_000_000))", strings: []) })) {
+            "Created: \($0)".log()
+        }
+        
+        FLite.fetch(model: TodoList.self) { qb in
+            qb.filter(\.title == "BIG")
+                .first()
+                .whenSuccess {
+                    bigList = $0
+                    semaphore.signal()
+            }
+        }
+        
+        semaphore.wait()
+        
+        XCTAssertEqual(bigList?.items.count, 1_000_000)
+    }
+    
     static var allTests = [
         ("testExample", testExample),
         ("testTodoArray", testTodoArray)
