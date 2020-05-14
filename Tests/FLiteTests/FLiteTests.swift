@@ -18,8 +18,7 @@ final class FLiteTests: XCTestCase {
             "Created: \($0)".log()
         }
         
-        FLite.fetch(model: Todo.self)
-            .whenSuccess { qb in
+        FLite.fetch(model: Todo.self) { qb in
             qb.all()
                 .whenSuccess {
                 "Values: \($0)".log()
@@ -34,7 +33,7 @@ final class FLiteTests: XCTestCase {
 
     func testTodoArray() {
         let semaphore = DispatchSemaphore(value: 0)
-        var values = (0 ..< 10).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 10000))", strings: []) }
+        var values = (0 ..< 100).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 10000))", strings: []) }
         
         FLite.storage = .memory
 
@@ -52,8 +51,7 @@ final class FLiteTests: XCTestCase {
             }
         }
 
-        FLite.fetch(model: Todo.self)
-            .whenSuccess { qb in
+        FLite.fetch(model: Todo.self) { qb in
             qb.all()
                 .whenSuccess {
                 "Value: \($0)".log()
