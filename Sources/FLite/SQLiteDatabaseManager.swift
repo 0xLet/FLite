@@ -4,6 +4,7 @@
 //
 //  Created by 0xLeif on 2/27/20.
 //
+
 import FluentSQLite
 
 public struct SQLiteDatabaseManager {
@@ -32,8 +33,15 @@ public struct SQLiteDatabaseManager {
 }
 
 public extension SQLiteDatabaseManager {
-    var connection: EventLoopFuture<SQLiteConnection> {
-        return pool.requestConnection()
+    func connection(withHandler handler: @escaping (SQLiteConnection) -> Void,
+                    completionHandler completion: @escaping () -> Void) {
+        pool.requestConnection().do {
+            handler($0)
+        }.do { (connection) in
+            self.pool.releaseConnection(connection)
+        }.whenComplete {
+            completion()
+        }
     }
 
     mutating func set(id: DatabaseIdentifier<SQLiteDatabase>) {
