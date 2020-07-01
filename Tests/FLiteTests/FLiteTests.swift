@@ -108,6 +108,7 @@ final class FLiteTests: XCTestCase {
     
     static var allTests = [
         ("testExample", testExample),
-        ("testTodoArray", testTodoArray)
+        ("testTodoArray", testTodoArray),
+        ("testTodoList_big", testTodoList_big)
     ]
 }
