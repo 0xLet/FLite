@@ -10,31 +10,46 @@ public struct FLite {
 }
 
 public extension FLite {
-    static var connection: EventLoopFuture<SQLiteConnection> {
-        return FLite.manager.pool.requestConnection()
+    static func connection(withHandler handler: @escaping (SQLiteConnection) -> Void,
+                    completionHandler completion: @escaping () -> Void) {
+        FLite.manager.connection(withHandler: handler,
+                                 completionHandler: completion)
     }
     
-    static func prepare<T: Migration>(model: T.Type, onComplete: (() -> Void)? = nil) where T: SQLiteModel {
-        FLite.connection.whenSuccess { (connection) in
-            model.prepare(on: connection).whenComplete {
-                onComplete?()
-            }
-        }
+    static func prepare<T: Migration>(model: T.Type,
+                                      onError: @escaping (Error) -> () = { print($0) },
+                                      onComplete: @escaping () -> Void) where T: SQLiteModel {
+        FLite.connection(withHandler: { (connection) in
+            model.prepare(on: connection)
+            .catchMap(onError)
+            .whenSuccess(onComplete)
+        }) {}
     }
     
-    static func create<T: Migration>(model: T, onComplete: (() -> Void)? = nil) where T: SQLiteModel {
-        FLite.connection.whenSuccess { (connection) in
-            model.save(on: connection).whenComplete {
-                onComplete?()
-            }
-        }
+    static func create<T: Migration>(model: T,
+                                     onError: @escaping (Error) -> () = { print($0) },
+                                     onComplete: @escaping (T) -> Void) where T: SQLiteModel {
+        FLite.connection(withHandler: { (connection) in
+            model.save(on: connection)
+            .catch(onError)
+            .whenSuccess(onComplete)
+        }) {}
     }
     
-    static func fetch<T: Migration>(model: T.Type, onComplete: (([T]) -> Void)? = nil) where T: SQLiteModel {
-        FLite.connection.whenSuccess { (connection) in
-            model.query(on: connection).all().whenSuccess { values in
-                onComplete?(values)
-            }
-        }
+    static func fetchAll<T: Migration>(model: T.Type,
+                                    onError: @escaping (Error) -> () = { print($0) },
+                                    onComplete: @escaping ([T]) -> Void) where T: SQLiteModel {
+        FLite.connection(withHandler: { (connection) in
+            model.query(on: connection).all()
+            .catch(onError)
+            .whenSuccess(onComplete)
+        }) {}
+    }
+    
+    static func fetch<T: Migration>(model: T.Type,
+                                    qb: @escaping (QueryBuilder<SQLiteDatabase, T>) -> Void) where T: SQLiteModel {
+        FLite.manager.connection(withHandler: { (connection) in
+            qb(model.query(on: connection))
+        }, completionHandler: {})
     }
 }
