@@ -1,16 +1,24 @@
-import FluentSQLite
-/// A single entry of a Todo list.
-internal final class Todo: SQLiteModel {
+import Foundation
+import FluentSQLiteDriver
+
+internal final class Todo: Model {
+    init() { }
+    
+    static let schema: String = "todos"
+    
     /// The unique identifier for this `Todo`.
-    var id: Int?
+    @ID(key: .id)
+    var id: UUID?
 
     /// A title describing what this `Todo` entails.
+    @Field(key: "title")
     var title: String
     
+    @Field(key: "someList")
     var someList: [String]
 
     /// Creates a new `Todo`.
-    init(id: Int? = nil, title: String, strings: [String]) {
+    init(id: UUID? = nil, title: String, strings: [String]) {
         self.id = id
         self.title = title
         self.someList = strings
@@ -18,11 +26,23 @@ internal final class Todo: SQLiteModel {
 }
 
 /// Allows `Todo` to be used as a dynamic migration.
-extension Todo: Migration { }
-extension Todo: CustomStringConvertible { 
+extension Todo: Migration {
+    func prepare(on database: Database) -> EventLoopFuture<Void> {
+        database.schema(Todo.schema)
+            .id()
+            .field("title", .string, .required)
+            .field("someList", .array(of: .string), .required)
+            .create()
+    }
+    
+    func revert(on database: Database) -> EventLoopFuture<Void> {
+        database.schema(Todo.schema).delete()
+    }
+}
+extension Todo: CustomStringConvertible {
     var description: String {
         return """
-        Todo id: \(id ?? -1)
+        Todo id: \(id)
             title: \(title)
             someList: \(someList)
         """
@@ -30,15 +50,22 @@ extension Todo: CustomStringConvertible {
 }
 
 // A Todo list.
-internal final class TodoList: SQLiteModel {
-    var id: Int?
-
+internal final class TodoList: Model {
+    init() { }
+    
+    static var schema: String = "todolist"
+    
+    @ID(key: .id)
+    var id: UUID?
+    
+    @Field(key: "title")
     var title: String
     
+    @Field(key: "items")
     var items: [Todo]
 
     /// Creates a new `Todo`.
-    init(id: Int? = nil, title: String, items: [Todo]) {
+    init(id: UUID? = nil, title: String, items: [Todo]) {
         self.id = id
         self.title = title
         self.items = items
@@ -46,11 +73,24 @@ internal final class TodoList: SQLiteModel {
 }
 
 /// Allows `TodoList` to be used as a dynamic migration.
-extension TodoList: Migration { }
+extension TodoList: Migration {
+    func prepare(on database: Database) -> EventLoopFuture<Void> {
+        database.schema(TodoList.schema)
+            .id()
+            .field("title", .string, .required)
+            .field("items", .array(of: .custom(Todo.self)), .required)
+            .create()
+    }
+    
+    func revert(on database: Database) -> EventLoopFuture<Void> {
+        database.schema(TodoList.schema).delete()
+    }
+}
+
 extension TodoList: CustomStringConvertible {
     var description: String {
         return """
-        TodoList id: \(id ?? -1)
+        TodoList id: \(id)
             title: \(title)
             items: \(items)
         """
