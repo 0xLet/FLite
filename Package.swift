@@ -20,7 +20,9 @@ let package = Package(
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "https://github.com/0xLeif/fluent-sqlite-driver.git", .branch("master")),
         .package(url: "https://github.com/vapor/sqlite-nio.git", .branch("master")),
-        .package(url: "https://github.com/0xLeif/sqlite-kit", .branch("master"))
+        .package(url: "https://github.com/0xLeif/sqlite-kit.git", .branch("master")),
+        .package(url: "https://github.com/0xLeif/fluent-kit.git", .branch("master")),
+        .package(url: "https://github.com/0xLeif/async-kit.git", .branch("master"))
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -30,7 +32,9 @@ let package = Package(
             dependencies: [
             .product(name: "FluentSQLiteDriver", package: "fluent-sqlite-driver"),
             .product(name: "SQLiteNIO", package: "sqlite-nio"),
-            .product(name: "SQLiteKit", package: "sqlite-kit")
+            .product(name: "SQLiteKit", package: "sqlite-kit"),
+            .product(name: "FluentKit", package: "fluent-kit"),
+            .product(name: "AsyncKit", package: "async-kit")
         ]),
         .testTarget(
             name: "FLiteTests",

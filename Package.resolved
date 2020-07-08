@@ -3,20 +3,20 @@
     "pins": [
       {
         "package": "async-kit",
-        "repositoryURL": "https://github.com/vapor/async-kit.git",
+        "repositoryURL": "https://github.com/0xLeif/async-kit.git",
         "state": {
-          "branch": null,
-          "revision": "7457413e57dbfac762b32dd30c1caf2c55a02a3d",
-          "version": "1.2.0"
+          "branch": "master",
+          "revision": "01ae20f158bdc11711774467716ee552527a1fff",
+          "version": null
         }
       },
       {
         "package": "fluent-kit",
-        "repositoryURL": "https://github.com/vapor/fluent-kit.git",
+        "repositoryURL": "https://github.com/0xLeif/fluent-kit.git",
         "state": {
-          "branch": null,
-          "revision": "c9d8cf299c0132b3b9b7dec103a7ec7276d63b41",
-          "version": "1.0.3"
+          "branch": "master",
+          "revision": "8f2b1f7c9298b6952423dc16d1bfb77c9f295699",
+          "version": null
         }
       },
       {
@@ -39,7 +39,7 @@
       },
       {
         "package": "sqlite-kit",
-        "repositoryURL": "https://github.com/0xLeif/sqlite-kit",
+        "repositoryURL": "https://github.com/0xLeif/sqlite-kit.git",
         "state": {
           "branch": "master",
           "revision": "46bdd64c73925c6e0d5d30dbf621243442ee0b3e",
