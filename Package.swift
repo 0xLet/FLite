@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "FLite",
     platforms: [
-        .iOS("11.0"),
+        .iOS("13.0"),
         .macOS("10.15")
     ],
     products: [
