@@ -1,6 +1,6 @@
 import FluentSQLiteDriver
 
-class FLite {
+public class FLite {
     // MARK: Private Values
     
     private var group: EventLoopGroup!
@@ -75,27 +75,27 @@ class FLite {
     
     // MARK: Database Functions
     
-    func prepare(migration: Migration) -> EventLoopFuture<Void> {
+    public func prepare(migration: Migration) -> EventLoopFuture<Void> {
         migration.prepare(on: db)
     }
     
-    func prepare<T: Migration & Model>(migration: T.Type) -> EventLoopFuture<Void> {
+    public func prepare<T: Migration & Model>(migration: T.Type) -> EventLoopFuture<Void> {
         migration.init().prepare(on: db)
     }
     
-    func add<T: Model>(model: T) -> EventLoopFuture<Void> {
+    public func add<T: Model>(model: T) -> EventLoopFuture<Void> {
         model.save(on: db)
     }
     
-    func query<T: Model>(model: T.Type) -> QueryBuilder<T> {
+    public func query<T: Model>(model: T.Type) -> QueryBuilder<T> {
         db.query(model)
     }
     
-    func fetch<T: Model>(model: T.Type) -> EventLoopFuture<[T]> {
+    public func fetch<T: Model>(model: T.Type) -> EventLoopFuture<[T]> {
         db.query(model).all()
     }
     
-    func shutdown() {
+    public func shutdown() {
         dbs.shutdown()
         dbs = nil
         
@@ -120,27 +120,27 @@ class FLite {
     
     // MARK: Static Database Functions
     
-    static func prepare(migration: Migration) -> EventLoopFuture<Void> {
+    public static func prepare(migration: Migration) -> EventLoopFuture<Void> {
         migration.prepare(on: FLite.main.db)
     }
     
-    static func prepare<T: Migration & Model>(migration: T.Type) -> EventLoopFuture<Void> {
+    public static func prepare<T: Migration & Model>(migration: T.Type) -> EventLoopFuture<Void> {
         migration.init().prepare(on: FLite.main.db)
     }
     
-    static func add<T: Model>(model: T) -> EventLoopFuture<Void> {
+    public static func add<T: Model>(model: T) -> EventLoopFuture<Void> {
         model.save(on: FLite.main.db)
     }
     
-    static func query<T: Model>(model: T.Type) -> QueryBuilder<T> {
+    public static func query<T: Model>(model: T.Type) -> QueryBuilder<T> {
         FLite.main.db.query(model)
     }
     
-    static func fetch<T: Model>(model: T.Type) -> EventLoopFuture<[T]> {
+    public static func fetch<T: Model>(model: T.Type) -> EventLoopFuture<[T]> {
         FLite.main.db.query(model).all()
     }
     
-    static func shutdown() {
+    public static func shutdown() {
         FLite.main.dbs.shutdown()
     }
 }
