@@ -21,11 +21,11 @@
       },
       {
         "package": "fluent-sqlite-driver",
-        "repositoryURL": "https://github.com/vapor/fluent-sqlite-driver.git",
+        "repositoryURL": "https://github.com/0xLeif/fluent-sqlite-driver.git",
         "state": {
-          "branch": null,
-          "revision": "a9f4313e78f68b41c91d8057ee8269c9beb1e4d5",
-          "version": "4.0.0-rc.2"
+          "branch": "master",
+          "revision": "59b058c305aca604b66b5e95bb32f6bde1205554",
+          "version": null
         }
       },
       {
