@@ -1,9 +1,10 @@
 # FLite
 
-FluentSQLite --> F + Lite -- > FLite
+## FluentSQLiteDriver --> F + Lite -- > FLite
 
-Example Use:
+### Example Uses:
 
+#### FLite.main
 ```
 // Use FLite.main
 //  Default Storage Type: Memory
@@ -16,7 +17,10 @@ FLite.fetch(model: Todo.self)
     .whenSuccess { (values) in
         print(values)
 }
+```
 
+#### FLite.init(...)
+```
 // Create your own FLite
 
 let flite = FLite(threads: 30,
