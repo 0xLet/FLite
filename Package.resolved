@@ -50,9 +50,9 @@
         "package": "sqlite-nio",
         "repositoryURL": "https://github.com/vapor/sqlite-nio.git",
         "state": {
-          "branch": null,
+          "branch": "master",
           "revision": "af884d7f01f4dd93b2844c1f0dd2bf0fd24f04d3",
-          "version": "1.0.0-rc.1.1"
+          "version": null
         }
       },
       {
