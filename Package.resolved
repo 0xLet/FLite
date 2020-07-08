@@ -39,11 +39,11 @@
       },
       {
         "package": "sqlite-kit",
-        "repositoryURL": "https://github.com/vapor/sqlite-kit.git",
+        "repositoryURL": "https://github.com/0xLeif/sqlite-kit",
         "state": {
-          "branch": null,
-          "revision": "9259e3948dbc4f8e6a1e761423483e10931c03c9",
-          "version": "4.0.0-rc.1.1"
+          "branch": "master",
+          "revision": "46bdd64c73925c6e0d5d30dbf621243442ee0b3e",
+          "version": null
         }
       },
       {
