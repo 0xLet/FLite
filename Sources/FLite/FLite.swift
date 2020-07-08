@@ -95,28 +95,6 @@ class FLite {
         db.query(model).all()
     }
     
-    // MARK: Static Database Functions
-    
-    static func prepare(migration: Migration) -> EventLoopFuture<Void> {
-        migration.prepare(on: FLite.main.db)
-    }
-    
-    static func prepare<T: Migration & Model>(migration: T.Type) -> EventLoopFuture<Void> {
-        migration.init().prepare(on: FLite.main.db)
-    }
-    
-    static func add<T: Model>(model: T) -> EventLoopFuture<Void> {
-        model.save(on: FLite.main.db)
-    }
-    
-    static func query<T: Model>(model: T.Type) -> QueryBuilder<T> {
-        FLite.main.db.query(model)
-    }
-    
-    static func fetch<T: Model>(model: T.Type) -> EventLoopFuture<[T]> {
-        FLite.main.db.query(model).all()
-    }
-    
     func shutdown() {
         dbs.shutdown()
         dbs = nil
@@ -138,6 +116,28 @@ class FLite {
             }
         }
         group = nil
+    }
+    
+    // MARK: Static Database Functions
+    
+    static func prepare(migration: Migration) -> EventLoopFuture<Void> {
+        migration.prepare(on: FLite.main.db)
+    }
+    
+    static func prepare<T: Migration & Model>(migration: T.Type) -> EventLoopFuture<Void> {
+        migration.init().prepare(on: FLite.main.db)
+    }
+    
+    static func add<T: Model>(model: T) -> EventLoopFuture<Void> {
+        model.save(on: FLite.main.db)
+    }
+    
+    static func query<T: Model>(model: T.Type) -> QueryBuilder<T> {
+        FLite.main.db.query(model)
+    }
+    
+    static func fetch<T: Model>(model: T.Type) -> EventLoopFuture<[T]> {
+        FLite.main.db.query(model).all()
     }
     
     static func shutdown() {
