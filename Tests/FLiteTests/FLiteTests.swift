@@ -25,6 +25,29 @@ final class FLiteTests: XCTestCase {
         XCTAssert(values.count > 0)
     }
     
+    func testCustomFLite() {
+        let semaphore = DispatchSemaphore(value: 0)
+        var values = [Todo]()
+        
+        let flite = FLite(threads: 30,
+                          configuration: .sqlite(.memory, maxConnectionsPerEventLoop: 30),
+                          id: .sqlite,
+                          logger: Logger(label: "Custom.FLITE"))
+        
+        try? flite.prepare(migration: Todo.self).wait()
+        
+        try! flite.add(model: Todo(title: "Hello World", strings: ["hello", "world"])).wait()
+        
+        flite.fetch(model: Todo.self)
+            .whenSuccess { (todos) in
+                values = todos
+                semaphore.signal()
+        }
+        
+        semaphore.wait()
+        XCTAssert(values.count > 0)
+    }
+    
     func testTodoArray() {
         let semaphore = DispatchSemaphore(value: 0)
         var values = (0 ..< 500).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 10000))", strings: []) }
