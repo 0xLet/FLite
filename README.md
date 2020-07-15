@@ -5,7 +5,7 @@
 ### Example Uses:
 
 #### FLite.main
-```
+```swift
 // Use FLite.main
 //  Default Storage Type: Memory
 
@@ -20,7 +20,7 @@ FLite.fetch(model: Todo.self)
 ```
 
 #### FLite.init(...)
-```
+```swift
 // Create your own FLite
 
 let flite = FLite(threads: 30,
