@@ -1,4 +1,5 @@
 import FluentSQLiteDriver
+import NIO
 
 public class FLite {
     // MARK: Private Values
@@ -27,7 +28,7 @@ public class FLite {
     // Private
     
     private init() {
-        let threads = 500
+        let threads = System.coreCount
         
         group = MultiThreadedEventLoopGroup(numberOfThreads: threads)
         
