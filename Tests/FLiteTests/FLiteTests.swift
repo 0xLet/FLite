@@ -1,30 +1,47 @@
 import XCTest
-import FluentSQLite
+import FluentSQLiteDriver
 @testable import FLite
 
-
 final class FLiteTests: XCTestCase {
+    override func tearDown() {
+        FLite.shutdown()
+    }
+    
     func testExample() {
         let semaphore = DispatchSemaphore(value: 0)
         var values = [Todo]()
         
-        FLite.storage = .memory
+        try? FLite.prepare(migration: Todo.self).wait()
         
-        FLite.prepare(model: Todo.self) {
-            "Prepared".log()
+        try! FLite.add(model: Todo(title: "Hello World", strings: ["hello", "world"])).wait()
+        
+        FLite.fetch(model: Todo.self)
+            .whenSuccess { (todos) in
+                values = todos
+                semaphore.signal()
         }
         
-        FLite.create(model: Todo(title: "Hello World", strings: ["hello", "world"])) {
-            "Created: \($0)".log()
-        }
+        semaphore.wait()
+        XCTAssert(values.count > 0)
+    }
+    
+    func testCustomFLite() {
+        let semaphore = DispatchSemaphore(value: 0)
+        var values = [Todo]()
         
-        FLite.fetch(model: Todo.self) { qb in
-            qb.all()
-                .whenSuccess {
-                    "Values: \($0)".log()
-                    values = $0
-                    semaphore.signal()
-            }
+        let flite = FLite(threads: 30,
+                          configuration: .sqlite(.memory, maxConnectionsPerEventLoop: 30),
+                          id: .sqlite,
+                          logger: Logger(label: "Custom.FLITE"))
+        
+        try? flite.prepare(migration: Todo.self).wait()
+        
+        try! flite.add(model: Todo(title: "Hello World", strings: ["hello", "world"])).wait()
+        
+        flite.fetch(model: Todo.self)
+            .whenSuccess { (todos) in
+                values = todos
+                semaphore.signal()
         }
         
         semaphore.wait()
@@ -35,70 +52,38 @@ final class FLiteTests: XCTestCase {
         let semaphore = DispatchSemaphore(value: 0)
         var values = (0 ..< 500).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 10000))", strings: []) }
         
-        FLite.storage = .memory
+        try? FLite.prepare(migration: Todo.self).wait()
         
-        FLite.manager.set(maxConnections: 100)
-        
-        FLite.manager.set(id: "Something Else")
-        
-        FLite.prepare(model: Todo.self) {
-            "Prepared".log()
+        values.forEach { value in
+            try! FLite.add(model: value).wait()
         }
         
-        values.forEach { value in 
-            FLite.create(model: value) {
-                "Created: \($0)".log()
-            }
-        }
-        
-        FLite.fetch(model: Todo.self) { qb in
-            qb.all()
-                .whenSuccess {
-                    "Value: \($0)".log()
-                    values = $0
-                    semaphore.signal()
-            }
+        FLite.fetch(model: Todo.self)
+            .whenSuccess { (todos) in
+                values = todos
+                semaphore.signal()
         }
         
         semaphore.wait()
         XCTAssert(values.count > 0)
+        XCTAssertEqual(values.count, 500)
     }
     
     func testTodoList_big() {
         let semaphore = DispatchSemaphore(value: 0)
         var bigList: TodoList?
         
-        FLite.storage = .memory
-        
-        FLite.manager.set(maxConnections: 10)
-        
-        FLite.manager.set(id: "Something Else")
-        
-        FLite.prepare(model: Todo.self) {
-            "Prepared".log()
-        }
-        
-        FLite.prepare(model: TodoList.self) {
-            "TodoList Ready".log()
-        }
+        try? FLite.prepare(migration: Todo.self).wait()
+        try? FLite.prepare(migration: TodoList.self).wait()
         
         let list = TodoList(title: "First", items: (0 ..< 100_000).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 100_000))", strings: ["1", "two", "111"]) })
         
-        FLite.create(model: list) { (value) in
-            "Created: \(value)".log()
-        }
+        try! FLite.add(model: list).wait()
+        try! FLite.add(model: TodoList(title: "BIG", items: (0 ..< 1_000_000).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 1_000_000))", strings: []) })).wait()
         
-        FLite.create(model: TodoList(title: "BIG", items: (0 ..< 1_000_000).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 1_000_000))", strings: []) })) {
-            "Created: \($0)".log()
-        }
-        
-        FLite.fetch(model: TodoList.self) { qb in
-            qb.filter(\.title == "BIG")
-                .first()
-                .whenSuccess {
-                    bigList = $0
-                    semaphore.signal()
-            }
+        FLite.query(model: TodoList.self).filter("title", .equal, "BIG").first().whenSuccess {
+            bigList = $0
+            semaphore.signal()
         }
         
         semaphore.wait()
