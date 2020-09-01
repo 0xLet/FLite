@@ -3,11 +3,11 @@
     "pins": [
       {
         "package": "async-kit",
-        "repositoryURL": "https://github.com/0xLeif/async-kit.git",
+        "repositoryURL": "https://github.com/vapor/async-kit.git",
         "state": {
-          "branch": "master",
-          "revision": "01ae20f158bdc11711774467716ee552527a1fff",
-          "version": null
+          "branch": null,
+          "revision": "7457413e57dbfac762b32dd30c1caf2c55a02a3d",
+          "version": "1.2.0"
         }
       },
       {
