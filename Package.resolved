@@ -12,20 +12,20 @@
       },
       {
         "package": "fluent-kit",
-        "repositoryURL": "https://github.com/0xLeif/fluent-kit.git",
+        "repositoryURL": "https://github.com/vapor/fluent-kit.git",
         "state": {
-          "branch": "master",
-          "revision": "8f2b1f7c9298b6952423dc16d1bfb77c9f295699",
-          "version": null
+          "branch": null,
+          "revision": "ef2a9a76c48856f0388ee2026d67d2ebde8c571c",
+          "version": "1.7.3"
         }
       },
       {
         "package": "fluent-sqlite-driver",
-        "repositoryURL": "https://github.com/0xLeif/fluent-sqlite-driver.git",
+        "repositoryURL": "https://github.com/vapor/fluent-sqlite-driver.git",
         "state": {
-          "branch": "master",
-          "revision": "59b058c305aca604b66b5e95bb32f6bde1205554",
-          "version": null
+          "branch": null,
+          "revision": "6f29f6f182c812075f09c7575c18ac5535c26824",
+          "version": "4.0.1"
         }
       },
       {
@@ -33,26 +33,26 @@
         "repositoryURL": "https://github.com/vapor/sql-kit.git",
         "state": {
           "branch": null,
-          "revision": "8b82edd5d918068f204e3ac4206d5d15f6740395",
-          "version": "3.5.0"
+          "revision": "ea9928b7f4a801b175a00b982034d9c54ecb6167",
+          "version": "3.7.0"
         }
       },
       {
         "package": "sqlite-kit",
-        "repositoryURL": "https://github.com/0xLeif/sqlite-kit.git",
+        "repositoryURL": "https://github.com/vapor/sqlite-kit.git",
         "state": {
-          "branch": "master",
-          "revision": "46bdd64c73925c6e0d5d30dbf621243442ee0b3e",
-          "version": null
+          "branch": null,
+          "revision": "2ec279b9c845cec254646834b66338551a024561",
+          "version": "4.0.2"
         }
       },
       {
         "package": "sqlite-nio",
         "repositoryURL": "https://github.com/vapor/sqlite-nio.git",
         "state": {
-          "branch": "master",
-          "revision": "af884d7f01f4dd93b2844c1f0dd2bf0fd24f04d3",
-          "version": null
+          "branch": null,
+          "revision": "2e9ae8aab4f20a372901047e0aaf051783eb8bd7",
+          "version": "1.0.0"
         }
       },
       {
