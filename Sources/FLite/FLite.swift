@@ -88,6 +88,10 @@ public class FLite {
         model.save(on: db)
     }
     
+    public func update<T: Model>(model: T) -> EventLoopFuture<Void> {
+        model.update(on: db)
+    }
+    
     public func query<T: Model>(model: T.Type) -> QueryBuilder<T> {
         db.query(model)
     }
@@ -122,23 +126,27 @@ public class FLite {
     // MARK: Static Database Functions
     
     public static func prepare(migration: Migration) -> EventLoopFuture<Void> {
-        migration.prepare(on: FLite.main.db)
+        FLite.main.prepare(migration: migration)
     }
     
     public static func prepare<T: Migration & Model>(migration: T.Type) -> EventLoopFuture<Void> {
-        migration.init().prepare(on: FLite.main.db)
+        FLite.main.prepare(migration: migration)
     }
     
     public static func add<T: Model>(model: T) -> EventLoopFuture<Void> {
-        model.save(on: FLite.main.db)
+        FLite.main.add(model: model)
+    }
+    
+    public static func update<T: Model>(model: T) -> EventLoopFuture<Void> {
+        FLite.main.update(model: model)
     }
     
     public static func query<T: Model>(model: T.Type) -> QueryBuilder<T> {
-        FLite.main.db.query(model)
+        FLite.main.query(model: model)
     }
     
     public static func fetch<T: Model>(model: T.Type) -> EventLoopFuture<[T]> {
-        FLite.main.db.query(model).all()
+        FLite.main.query(model: model).all()
     }
     
     public static func shutdown() {
