@@ -18,10 +18,10 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
-        .package(url: "https://github.com/0xLeif/fluent-sqlite-driver.git", .branch("master")),
-        .package(url: "https://github.com/vapor/sqlite-nio.git", .branch("master")),
-        .package(url: "https://github.com/0xLeif/sqlite-kit.git", .branch("master")),
-        .package(url: "https://github.com/0xLeif/fluent-kit.git", .branch("master")),
+        .package(url: "https://github.com/vapor/fluent-sqlite-driver.git", from: "4.0.1"),
+        .package(url: "https://github.com/vapor/sqlite-nio.git", from: "1.0.0"),
+        .package(url: "https://github.com/vapor/sqlite-kit.git", from: "4.0.2"),
+        .package(url: "https://github.com/vapor/fluent-kit.git", from: "1.7.3"),
         .package(url: "https://github.com/0xLeif/async-kit.git", .branch("master"))
     ],
     targets: [
