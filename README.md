@@ -2,6 +2,11 @@
 
 ## FluentSQLiteDriver --> F + Lite -- > FLite
 
+FLite uses [Fluent](https://docs.vapor.codes/4.0/fluent/overview/)'s [FluentSQLiteDriver](https://github.com/vapor/fluent-sqlite-driver.git) from Vapor
+> Fluent is an ORM framework for Swift. It takes advantage of Swift's strong type system to provide an easy-to-use interface for your database. Using Fluent centers around the creation of model types which represent data structures in your database. These models are then used to perform create, read, update, and delete operations instead of writing raw queries.
+> 
+> Excerpt from: Vapor Docs. https://docs.vapor.codes/4.0/fluent/overview/
+
 ### Example Uses:
 
 #### FLite.main
