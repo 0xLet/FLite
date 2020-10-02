@@ -6,15 +6,15 @@
 
 #### FLite.main
 ```swift
-// Use FLite.main
+// Use FLite.memory
 //  Default Storage Type: Memory
 
-try? FLite.prepare(migration: Todo.self).wait()
+try? FLite.memory.prepare(migration: Todo.self).wait()
 
-try! FLite.add(model: Todo(title: "Hello World", strings: ["hello", "world"])).wait()
+try! FLite.memory.add(model: Todo(title: "Hello World", strings: ["hello", "world"])).wait()
 
-FLite.fetch(model: Todo.self)
-    .whenSuccess { (values) in
+FLite.memory.all(model: Todo.self)
+    .whenSuccess { (todos) in
         print(values)
 }
 ```
@@ -23,16 +23,13 @@ FLite.fetch(model: Todo.self)
 ```swift
 // Create your own FLite
 
-let flite = FLite(threads: 30,
-                  configuration: .sqlite(.memory, maxConnectionsPerEventLoop: 30),
-                  id: .sqlite,
-                  logger: Logger(label: "Custom.FLITE"))
+let persist = FLite(configuration: .file("\(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? "")/default.sqlite"), loggerLabel: "persisted-FLITE")
 
-try? flite.prepare(migration: Todo.self).wait()
+try? persist.prepare(migration: Todo.self).wait()
 
-try! flite.add(model: Todo(title: "Hello World", strings: ["hello", "world"])).wait()
+try! persist.add(model: Todo(title: "Hello World", strings: ["hello", "world"])).wait()
 
-flite.fetch(model: Todo.self)
+persist.all(model: Todo.self)
     .whenSuccess { (values) in
         print(values)
 }
