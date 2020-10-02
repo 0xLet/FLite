@@ -91,6 +91,10 @@ public class FLite {
         model.save(on: db)
     }
     
+    public func delete<T: Model>(model: T) -> EventLoopFuture<Void> {
+        model.delete(on: db)
+    }
+    
     public func update<T: Model>(model: T) -> EventLoopFuture<Void> {
         model.update(on: db)
     }
