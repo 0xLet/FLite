@@ -4,18 +4,18 @@ import FluentSQLiteDriver
 
 final class FLiteTests: XCTestCase {
     override func tearDown() {
-        FLite.shutdown()
+        FLite.memory.shutdown()
     }
     
     func testExample() {
         let semaphore = DispatchSemaphore(value: 0)
         var values = [Todo]()
         
-        try? FLite.prepare(migration: Todo.self).wait()
+        try? FLite.memory.prepare(migration: Todo.self).wait()
         
-        try! FLite.add(model: Todo(title: "Hello World", strings: ["hello", "world"])).wait()
+        try! FLite.memory.add(model: Todo(title: "Hello World", strings: ["hello", "world"])).wait()
         
-        FLite.fetch(model: Todo.self)
+        FLite.memory.all(model: Todo.self)
             .whenSuccess { (todos) in
                 values = todos
                 semaphore.signal()
@@ -38,7 +38,7 @@ final class FLiteTests: XCTestCase {
         
         try! flite.add(model: Todo(title: "Hello World", strings: ["hello", "world"])).wait()
         
-        flite.fetch(model: Todo.self)
+        flite.all(model: Todo.self)
             .whenSuccess { (todos) in
                 values = todos
                 semaphore.signal()
@@ -52,13 +52,13 @@ final class FLiteTests: XCTestCase {
         let semaphore = DispatchSemaphore(value: 0)
         var values = (0 ..< 500).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 10000))", strings: []) }
         
-        try? FLite.prepare(migration: Todo.self).wait()
+        try? FLite.memory.prepare(migration: Todo.self).wait()
         
         values.forEach { value in
-            try! FLite.add(model: value).wait()
+            try! FLite.memory.add(model: value).wait()
         }
         
-        FLite.fetch(model: Todo.self)
+        FLite.memory.all(model: Todo.self)
             .whenSuccess { (todos) in
                 values = todos
                 semaphore.signal()
@@ -73,15 +73,15 @@ final class FLiteTests: XCTestCase {
         let semaphore = DispatchSemaphore(value: 0)
         var bigList: TodoList?
         
-        try? FLite.prepare(migration: Todo.self).wait()
-        try? FLite.prepare(migration: TodoList.self).wait()
+        try? FLite.memory.prepare(migration: Todo.self).wait()
+        try? FLite.memory.prepare(migration: TodoList.self).wait()
         
         let list = TodoList(title: "First", items: (0 ..< 100_000).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 100_000))", strings: ["1", "two", "111"]) })
         
-        try! FLite.add(model: list).wait()
-        try! FLite.add(model: TodoList(title: "BIG", items: (0 ..< 1_000_000).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 1_000_000))", strings: []) })).wait()
+        try! FLite.memory.add(model: list).wait()
+        try! FLite.memory.add(model: TodoList(title: "BIG", items: (0 ..< 1_000_000).map { _ in Todo(title: "Todo #\(Int.random(in: 0 ... 1_000_000))", strings: []) })).wait()
         
-        FLite.query(model: TodoList.self).filter("title", .equal, "BIG").first().whenSuccess {
+        FLite.memory.query(model: TodoList.self).filter("title", .equal, "BIG").first().whenSuccess {
             bigList = $0
             semaphore.signal()
         }
