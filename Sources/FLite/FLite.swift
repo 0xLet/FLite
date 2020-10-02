@@ -12,7 +12,7 @@ public class FLite {
     // MARK: deinit
     
     deinit {
-        shutdown()
+        destory()
     }
     
     // MARK: Calculated Values
@@ -21,13 +21,14 @@ public class FLite {
         dbs.database(logger: log, on: dbs.eventLoopGroup.next())!
     }
     
-    public static var main: FLite = FLite()
+    public static var memory: FLite = FLite(loggerLabel: "FLITE")
     
     // MARK: init
     
-    // Private
-    
-    private init() {
+    public init(
+        configuration: SQLiteConfiguration = .init(storage: .memory),
+        loggerLabel: String
+    ) {
         let threads = System.coreCount
         
         group = MultiThreadedEventLoopGroup(numberOfThreads: threads)
@@ -36,18 +37,18 @@ public class FLite {
         pool.start()
         
         dbs = Databases(threadPool: pool, on: group)
-        dbs.use(.sqlite(.memory), as: .sqlite)
+        dbs.use(.sqlite(configuration), as: .sqlite)
         
-        log = Logger(label: "FLITE")
+        log = Logger(label: loggerLabel)
     }
     
-    // Public
-    
-    public init(eventGroup: EventLoopGroup,
-                threadPool: NIOThreadPool,
-                configuration: DatabaseConfigurationFactory,
-                id: DatabaseID,
-                logger: Logger) {
+    public init(
+        eventGroup: EventLoopGroup,
+        threadPool: NIOThreadPool,
+        configuration: DatabaseConfigurationFactory,
+        id: DatabaseID,
+        logger: Logger
+    ) {
         group = eventGroup
         pool = threadPool
         
@@ -59,10 +60,12 @@ public class FLite {
         log = logger
     }
     
-    public init(threads: Int,
-                configuration: DatabaseConfigurationFactory,
-                id: DatabaseID,
-                logger: Logger) {
+    public init(
+        threads: Int,
+        configuration: DatabaseConfigurationFactory,
+        id: DatabaseID,
+        logger: Logger
+    ) {
         group = MultiThreadedEventLoopGroup(numberOfThreads: threads)
         
         pool = .init(numberOfThreads: threads)
@@ -88,23 +91,35 @@ public class FLite {
         model.save(on: db)
     }
     
+    public func delete<T: Model>(model: T) -> EventLoopFuture<Void> {
+        model.delete(on: db)
+    }
+    
+    public func update<T: Model>(model: T) -> EventLoopFuture<Void> {
+        model.update(on: db)
+    }
+    
     public func query<T: Model>(model: T.Type) -> QueryBuilder<T> {
         db.query(model)
     }
     
-    public func fetch<T: Model>(model: T.Type) -> EventLoopFuture<[T]> {
+    public func all<T: Model>(model: T.Type) -> EventLoopFuture<[T]> {
         db.query(model).all()
     }
     
     public func shutdown() {
         dbs.shutdown()
+    }
+    
+    private func destory() {
+        shutdown()
         dbs = nil
         
         do {
             try pool.syncShutdownGracefully()
         } catch {
-            pool.shutdownGracefully {
-                print("(NIOThreadPool) Shutting Down with Error: \($0.debugDescription)")
+            pool.shutdownGracefully { [weak self] in
+                self?.log.error("(NIOThreadPool) Shutting Down with Error: \($0.debugDescription)")
             }
         }
         pool = nil
@@ -112,36 +127,10 @@ public class FLite {
         do {
             try group.syncShutdownGracefully()
         } catch {
-            group.shutdownGracefully {
-                print("(EventLoopGroup) Shutting Down with Error: \($0.debugDescription)")
+            group.shutdownGracefully { [weak self] in
+                self?.log.error("(EventLoopGroup) Shutting Down with Error: \($0.debugDescription)")
             }
         }
         group = nil
-    }
-    
-    // MARK: Static Database Functions
-    
-    public static func prepare(migration: Migration) -> EventLoopFuture<Void> {
-        migration.prepare(on: FLite.main.db)
-    }
-    
-    public static func prepare<T: Migration & Model>(migration: T.Type) -> EventLoopFuture<Void> {
-        migration.init().prepare(on: FLite.main.db)
-    }
-    
-    public static func add<T: Model>(model: T) -> EventLoopFuture<Void> {
-        model.save(on: FLite.main.db)
-    }
-    
-    public static func query<T: Model>(model: T.Type) -> QueryBuilder<T> {
-        FLite.main.db.query(model)
-    }
-    
-    public static func fetch<T: Model>(model: T.Type) -> EventLoopFuture<[T]> {
-        FLite.main.db.query(model).all()
-    }
-    
-    public static func shutdown() {
-        FLite.main.dbs.shutdown()
     }
 }
